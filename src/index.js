@@ -18,6 +18,11 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+});
+
 app.use("/api/hotels", hotelsRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/locations", locationsRouter);
