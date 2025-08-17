@@ -7,13 +7,14 @@ import {
   patchLocation,
   deleteLocation,
 } from "../application/location.js";
+import isAuthenticated from "./middleware/authentication-middleware.js";
 
 const locationsRouter = express.Router();
 
 locationsRouter
   .route("/")
   .get(getAllLocations)
-  .post(createLocation);
+  .post(isAuthenticated, createLocation);
 
 locationsRouter
   .route("/:_id")
