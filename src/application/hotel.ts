@@ -1,8 +1,14 @@
-import Hotel from "../infrastructure/entities/Hotel.js";
-import NotFoundError from "../domain/errors/not-found-error.js";
-import ValidationError from "../domain/errors/validation-error.js";
+import Hotel from "../infrastructure/entities/Hotel";
+import NotFoundError from "../domain/errors/not-found-error";
+import ValidationError from "../domain/errors/validation-error";
 
-export const getAllHotels = async (req, res, next) => {
+import { Request, Response, NextFunction } from "express";
+
+export const getAllHotels = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const hotels = await Hotel.find();
     res.status(200).json(hotels);
@@ -12,7 +18,11 @@ export const getAllHotels = async (req, res, next) => {
   }
 };
 
-export const createHotel = async (req, res, next) => {
+export const createHotel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const hotelData = req.body;
     if (
@@ -31,7 +41,11 @@ export const createHotel = async (req, res, next) => {
   }
 };
 
-export const getHotelById = async (req, res, next) => {
+export const getHotelById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const _id = req.params._id;
     const hotel = await Hotel.findById(_id);
@@ -44,7 +58,11 @@ export const getHotelById = async (req, res, next) => {
   }
 };
 
-export const updateHotel = async (req, res, next) => {
+export const updateHotel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const _id = req.params._id;
     const hotelData = req.body;
@@ -70,7 +88,11 @@ export const updateHotel = async (req, res, next) => {
   }
 };
 
-export const patchHotel = async (req, res, next) => {
+export const patchHotel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const _id = req.params._id;
     const hotelData = req.body;
@@ -88,7 +110,11 @@ export const patchHotel = async (req, res, next) => {
   }
 };
 
-export const deleteHotel = async (req, res, next) => {
+export const deleteHotel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const _id = req.params._id;
     const hotel = await Hotel.findById(_id);

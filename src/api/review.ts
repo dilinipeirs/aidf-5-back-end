@@ -1,5 +1,5 @@
 import express from "express";
-import { createReview, getReviewsForHotel } from "../application/review.js";
+import { createReview, getReviewsForHotel } from "../application/review";
 
 const reviewRouter = express.Router();
 

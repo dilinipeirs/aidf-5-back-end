@@ -1,4 +1,6 @@
 import express from "express";
+import { Request, Response, NextFunction } from "express";
+
 import {
   getAllHotels,
   createHotel,
@@ -6,20 +8,17 @@ import {
   updateHotel,
   patchHotel,
   deleteHotel,
-} from "../application/hotel.js";
-import isAuthenticated from "./middleware/authentication-middleware.js";
+} from "../application/hotel";
+import isAuthenticated from "./middleware/authentication-middleware";
 
 const hotelsRouter = express.Router();
 
-const preMiddleware = (req, res, next) => {
+const preMiddleware = (req: Request, res: Response, next: NextFunction) => {
   console.log(req.method, req.url);
   next();
 };
 
-hotelsRouter
-  .route("/")
-  .get(getAllHotels)
-  .post(createHotel);
+hotelsRouter.route("/").get(getAllHotels).post(createHotel);
 
 hotelsRouter
   .route("/:_id")
