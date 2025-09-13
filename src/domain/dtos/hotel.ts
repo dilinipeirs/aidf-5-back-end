@@ -7,3 +7,7 @@ export const CreateHotelDTO = z.object({
   price: z.number(),
   description: z.string(),
 });
+
+export const SearchHotelDTO = z.object({
+  query: z.string().min(1),
+});

@@ -31,6 +31,10 @@ const hotelSchema = new mongoose.Schema({
     ref: "Review",
     default: [],
   },
+  embedding: {
+    type: [Number],
+    default: [],
+  },
 });
 
 const Hotel = mongoose.model("Hotel", hotelSchema);
