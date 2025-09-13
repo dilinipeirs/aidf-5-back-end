@@ -8,6 +8,7 @@ import {
   updateHotel,
   patchHotel,
   deleteHotel,
+  searchHotels,
 } from "../application/hotel";
 import isAuthenticated from "./middleware/authentication-middleware";
 import isAdmin from "./middleware/authorization-middleware";
@@ -26,6 +27,8 @@ hotelsRouter
   .post(isAuthenticated, isAdmin, createHotel);
 
 hotelsRouter.route("/ai").post(respondToAIQuery);
+
+hotelsRouter.route("/search").get(searchHotels);
 
 hotelsRouter
   .route("/:_id")

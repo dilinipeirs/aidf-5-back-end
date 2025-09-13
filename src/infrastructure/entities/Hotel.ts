@@ -31,6 +31,10 @@ const hotelSchema = new mongoose.Schema({
     ref: "Review",
     default: [],
   },
+  embedding: {
+    type: [Number], // Array of numbers representing the vector embedding
+    default: [],
+  },
 });
 
 const Hotel = mongoose.model("Hotel", hotelSchema);

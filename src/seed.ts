@@ -3,6 +3,7 @@ import connectDB from "./infrastructure/db";
 
 import Hotel from "./infrastructure/entities/Hotel";
 import Location from "./infrastructure/entities/Location";
+import { generateHotelEmbedding } from "./utils/embeddings";
 
 // Sample hotels data (without _id and reviews - will be auto-generated)
 const hotels = [
@@ -112,11 +113,42 @@ const seedDatabase = async () => {
     const createdLocations = await Location.insertMany(locations);
     console.log(`Created ${createdLocations.length} locations`);
 
-    // Insert hotels
-    const createdHotels = await Hotel.insertMany(hotels);
-    console.log(`Created ${createdHotels.length} hotels`);
-
-    console.log("Updated hotels with review references");
+    // Insert hotels with embeddings
+    console.log("Creating hotels with embeddings...");
+    const createdHotels = [];
+    
+    for (let i = 0; i < hotels.length; i++) {
+      const hotel = hotels[i];
+      console.log(`Processing hotel ${i + 1}/${hotels.length}: ${hotel.name}`);
+      
+      try {
+        // Generate embedding for the hotel
+        const embedding = await generateHotelEmbedding({
+          name: hotel.name,
+          description: hotel.description,
+          location: hotel.location,
+          price: hotel.price
+        });
+        
+        // Create hotel with embedding
+        const createdHotel = await Hotel.create({
+          ...hotel,
+          embedding
+        });
+        
+        createdHotels.push(createdHotel);
+        console.log(`✅ Created hotel with embedding: ${hotel.name}`);
+        
+        // Add a small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        console.error(`❌ Failed to create hotel ${hotel.name}:`, error);
+        // Continue with next hotel instead of stopping
+      }
+    }
+    
+    console.log(`Created ${createdHotels.length} hotels with embeddings`);
     console.log("Database seeded successfully!");
 
     // Display summary
