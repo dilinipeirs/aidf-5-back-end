@@ -19,8 +19,7 @@ export const createBooking = async (
       throw new ValidationError(booking.error.message);
     }
 
-    const auth = getAuth(req);
-    const userId = (auth as any)?.userId as string | undefined;
+    const { userId } = getAuth(req);
     if (!userId) {
       throw new UnauthorizedError("Unauthorized");
     }
@@ -109,5 +108,3 @@ export const getBookingById = async (
     next(error);
   }
 };
-
-

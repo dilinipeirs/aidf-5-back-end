@@ -27,24 +27,15 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    // Prefer stored price when available; fallback to ad-hoc price_data
-    const lineItem = hotel.stripePriceId
-      ? { price: hotel.stripePriceId, quantity: numberOfNights }
-      : {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: hotel.name,
-              images: [hotel.image],
-            },
-            unit_amount: Math.round(hotel.price * 100),
-          },
-          quantity: numberOfNights,
-        };
+    // Require stored price and use price + quantity only
+    if (!hotel.stripePriceId) {
+      return res.status(400).json({ message: "Stripe price ID is missing for this hotel" });
+    }
+    const lineItem = { price: hotel.stripePriceId, quantity: numberOfNights } as const;
 
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
-      line_items: [lineItem as any],
+      line_items: [lineItem],
       mode: "payment",
       return_url: `${FRONTEND_URL}/booking/complete?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
