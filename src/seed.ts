@@ -114,35 +114,33 @@ const seedDatabase = async () => {
     let createdHotels = await Hotel.insertMany(toBeCreatedHotels);
     console.log(`Created ${createdHotels.length} hotels`);
 
-    // Create Stripe product with default price for each hotel
-    const withStripe = await Promise.all(
-      createdHotels.map(async (hotel) => {
-        try {
-          const product = await stripe.products.create({
-            name: hotel.name,
-            description: hotel.description,
-            default_price_data: {
-              unit_amount: Math.round(hotel.price * 100),
-              currency: "usd",
-            },
-          });
-          const defaultPriceId =
-            typeof product.default_price === "string"
-              ? product.default_price
-              : (product.default_price as any)?.id;
-          await Hotel.findByIdAndUpdate(
-            hotel._id,
-            { stripePriceId: defaultPriceId },
-            { new: true }
-          );
-          return { ...hotel.toObject(), stripePriceId: defaultPriceId };
-        } catch (e) {
-          console.warn(`Stripe setup failed for hotel ${hotel.name}:`, e);
-          return hotel;
-        }
-      })
-    );
-    createdHotels = withStripe as any;
+    // Create Stripe product with default price for each hotel (sequential with fixed delay)
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    for (const hotel of createdHotels) {
+      try {
+        const product = await stripe.products.create({
+          name: hotel.name,
+          description: hotel.description,
+          default_price_data: {
+            unit_amount: Math.round(hotel.price * 100),
+            currency: "usd",
+          },
+        });
+        const defaultPriceId =
+          typeof product.default_price === "string"
+            ? product.default_price
+            : (product.default_price as any)?.id;
+        await Hotel.findByIdAndUpdate(
+          hotel._id,
+          { stripePriceId: defaultPriceId },
+          { new: true }
+        );
+      } catch (e) {
+        console.warn(`Stripe setup failed for hotel ${hotel.name}:`, e);
+      }
+      // simple interval to avoid bursts
+      await sleep(300);
+    }
     console.log("Database seeded successfully!");
 
     // Display summary
