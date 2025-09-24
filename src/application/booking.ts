@@ -5,6 +5,8 @@ import { CreateBookingDTO } from "../domain/dtos/booking";
 import ValidationError from "../domain/errors/validation-error";
 import NotFoundError from "../domain/errors/not-found-error";
 import Hotel from "../infrastructure/entities/Hotel";
+import { getAuth } from "@clerk/express";
+import UnauthorizedError from "../domain/errors/unauthorized-error";
 
 export const createBooking = async (
   req: Request,
@@ -17,7 +19,11 @@ export const createBooking = async (
       throw new ValidationError(booking.error.message);
     }
 
-    const user = req.auth;
+    const auth = getAuth(req);
+    const userId = (auth as any)?.userId as string | undefined;
+    if (!userId) {
+      throw new UnauthorizedError("Unauthorized");
+    }
 
     const hotel = await Hotel.findById(booking.data.hotelId);
     if (!hotel) {
@@ -26,7 +32,7 @@ export const createBooking = async (
 
     const newBooking = await Booking.create({
       hotelId: booking.data.hotelId,
-      userId: user?.userId,
+      userId: userId,
       checkIn: booking.data.checkIn,
       checkOut: booking.data.checkOut,
       roomNumber: await (async () => {
