@@ -9,6 +9,7 @@ import {
   patchHotel,
   deleteHotel,
   getAllHotelsBySearchQuery,
+  createHotelStripePrice,
 } from "../application/hotel";
 import isAuthenticated from "./middleware/authentication-middleware";
 import isAdmin from "./middleware/authorization-middleware";
@@ -35,5 +36,9 @@ hotelsRouter
   .put(updateHotel)
   .patch(patchHotel)
   .delete(deleteHotel);
+
+hotelsRouter
+  .route("/:_id/stripe/price")
+  .post(isAuthenticated, isAdmin, createHotelStripePrice);
 
 export default hotelsRouter;

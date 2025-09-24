@@ -21,6 +21,9 @@ const hotelSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  stripePriceId: {
+    type: String,
+  },
   rating: {
     type: Number,
     min: 1,
