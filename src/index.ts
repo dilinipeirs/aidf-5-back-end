@@ -28,7 +28,7 @@ app.post(
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
   })
 );
 app.use(clerkMiddleware()); // Reads the JWT from the request and sets the auth object on the request
