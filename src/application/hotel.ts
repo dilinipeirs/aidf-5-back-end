@@ -35,18 +35,23 @@ export const getAllHotelsBySearchQuery = async (
     const { query } = result.data;
 
     const queryEmbedding = await generateEmbedding(query);
+    console.log(queryEmbedding);
 
     const hotels = await Hotel.aggregate([
       {
+        // searching
         $vectorSearch: {
           index: "hotel_vector_index",
           path: "embedding",
           queryVector: queryEmbedding,
-          numCandidates: 25,
+          // numCandidates specifies how many top-matching documents to consider before applying the final limit.
+          numCandidates: 10,
           limit: 4,
         },
       },
       {
+        // map the vector results from the hotels collection
+        // 1 indicates, we are mapping, 0 indicates we dont
         $project: {
           _id: 1,
           name: 1,
@@ -55,11 +60,12 @@ export const getAllHotelsBySearchQuery = async (
           image: 1,
           rating: 1,
           reviews: 1,
-          score: { $meta: "vectorSearchScore" },
+          score: { $meta: "vectorSearchScore" }, // the similarity
         },
       },
     ]);
 
+    console.log(hotels);
     res.status(200).json(hotels);
   } catch (error) {
     next(error);
