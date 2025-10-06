@@ -108,3 +108,38 @@ export const getBookingById = async (
     next(error);
   }
 };
+
+// this is used to get all bookings for a user, and attach the hotel details to the booking object
+export const getAllBookingsForUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.params.userId;
+    // sort by bookingDate in descending order and retrieve the bookings done by the user
+    const bookings = await Booking.find({ userId: userId }).sort({ bookingDate: 1 });
+    // Fetch hotel details for each booking and attach to booking object
+    const bookingsWithHotelDetails = await Promise.all(
+      bookings.map(async (booking) => {
+        const hotel = await Hotel.findById(booking.hotelId);
+        return {
+          ...booking.toObject(),
+          // remove the embedding from the hotel object to make it lightweight
+          hotel: hotel
+            ? (() => {
+                const { embedding, ...rest } = hotel.toObject();
+                return rest;
+              })()
+            : null,
+          // check if the booking is in the past
+          isPast: booking.checkOut < new Date(),
+        };
+      })
+    );
+    res.status(200).json(bookingsWithHotelDetails);
+  }
+  catch (error) {
+    next(error);
+  }
+};

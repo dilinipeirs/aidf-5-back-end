@@ -135,6 +135,7 @@ const seedDatabase = async () => {
           { stripePriceId: defaultPriceId },
           { new: true }
         );
+        console.warn(`stripePriceId for hotel ${hotel.name}: ${defaultPriceId} `);
       } catch (e) {
         console.warn(`Stripe setup failed for hotel ${hotel.name}:`, e);
       }
