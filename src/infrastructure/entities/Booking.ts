@@ -27,6 +27,10 @@ const bookingSchema = new mongoose.Schema({
     enum: ["PENDING", "PAID"],
     default: "PENDING",
   },
+  bookingDate: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Booking = mongoose.model("Booking", bookingSchema);

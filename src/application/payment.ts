@@ -9,7 +9,7 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
 
 export const createCheckoutSession = async (req: Request, res: Response) => {
   try {
-    const bookingId = req.body.bookingId as string;
+    const bookingId = req.body.bookingId as string; // check where the booking id is getting created
 
     const booking = await Booking.findById(bookingId);
     if (!booking) {
@@ -65,7 +65,7 @@ export const retrieveSessionStatus = async (req: Request, res: Response) => {
     }
 
     // If paid, mark booking as PAID (idempotent update)
-    if (checkoutSession.payment_status === "paid" && booking.paymentStatus !== "PAID") {
+    if (checkoutSession.payment_status === "paid" && booking.paymentStatus !== "PAID") {// not unpaid 
       await Booking.findByIdAndUpdate(booking._id, { paymentStatus: "PAID" });
     }
 
@@ -99,12 +99,14 @@ async function fulfillCheckout(sessionId: string) {
     return; // already handled
   }
 
-  if (checkoutSession.payment_status !== "unpaid") {
+  if (checkoutSession.payment_status !== "unpaid") { // does this handle expired and other payment statuses? or would it just update all to paid?
+    console.log("Updating booking payment status to PAID for booking id: " + booking._id); // this is not getting printed when running locally. dunno why
     await Booking.findByIdAndUpdate(booking._id, { paymentStatus: "PAID" });
   }
 }
 
 export const handleWebhook = async (req: Request, res: Response) => {
+  console.log("---- Handling Stripe Webhook ----");
   const payload = req.body as Buffer; // raw body
   const sig = req.headers["stripe-signature"] as string;
 
