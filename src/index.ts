@@ -6,6 +6,7 @@ import cors from "cors";
 import hotelsRouter from "./api/hotel";
 import bookingsRouter from "./api/booking";
 import paymentsRouter from "./api/payment";
+import amenitiesRouter from "./api/amenity";
 import connectDB from "./infrastructure/db";
 import reviewRouter from "./api/review";
 import locationsRouter from "./api/location";
@@ -50,6 +51,7 @@ app.use("/api/bookings", bookingsRouter);
 app.use("/api/payments", paymentsRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/locations", locationsRouter);
+app.use("/api/amenities", amenitiesRouter);
 
 app.use(globalErrorHandlingMiddleware);
 
