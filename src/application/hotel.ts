@@ -58,7 +58,7 @@ export const getAllHotelsBySearchQuery = async (
           name: 1,
           location: 1,
           price: 1,
-          image: 1,
+          images: 1,
           rating: 1,
           reviews: 1,
           score: { $meta: "vectorSearchScore" }, // the similarity
@@ -143,7 +143,7 @@ export const updateHotel = async (
     const hotelData = req.body;
     if (
       !hotelData.name ||
-      !hotelData.image ||
+      !hotelData.images ||
       !hotelData.location ||
       !hotelData.price ||
       !hotelData.description

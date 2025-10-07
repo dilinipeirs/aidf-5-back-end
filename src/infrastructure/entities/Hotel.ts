@@ -9,8 +9,8 @@ const hotelSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  image: {
-    type: String,
+  images: {
+    type: [String],
     required: true,
   },
   description: {
@@ -38,6 +38,11 @@ const hotelSchema = new mongoose.Schema({
     type: [Number],
     default: [],
   },
+  amenities:{
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Amenity",
+    default: [],
+  }
 });
 
 const Hotel = mongoose.model("Hotel", hotelSchema);
