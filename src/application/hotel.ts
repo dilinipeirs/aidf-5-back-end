@@ -1,4 +1,5 @@
 import Hotel from "../infrastructure/entities/Hotel";
+import Amenity from "../infrastructure/entities/Amenity";
 import NotFoundError from "../domain/errors/not-found-error";
 import ValidationError from "../domain/errors/validation-error";
 import { generateEmbedding } from "./utils/embeddings";
@@ -9,14 +10,29 @@ import { CreateHotelDTO, SearchHotelDTO } from "../domain/dtos/hotel";
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 
+/**
+ * Get all hotels with amenity names as string array and without embeddings
+ * Returns a lightweight response with essential hotel information
+ */
 export const getAllHotels = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const hotels = await Hotel.find();
-    res.status(200).json(hotels);
+    // Fetch hotels with populated amenities, excluding embeddings for lightweight response
+    const hotels = await Hotel.find()
+      .populate('amenities', 'name') // Populate amenity names only
+      .select('-embedding') // Exclude embeddings field to reduce response size
+      .lean(); // Use lean() for better performance
+    
+    // Transform amenities from objects to string array for cleaner API response
+    const hotelsWithAmenityNames = hotels.map(hotel => ({
+      ...hotel,
+      amenities: hotel.amenities.map((amenity: any) => amenity.name) // Extract only the name strings
+    }));
+    
+    res.status(200).json(hotelsWithAmenityNames);
     return;
   } catch (error) {
     next(error);
@@ -116,6 +132,10 @@ export const createHotel = async (
   }
 };
 
+/**
+ * Get a specific hotel by ID with amenity names as string array and without embeddings
+ * Returns detailed hotel information in a lightweight format
+ */
 export const getHotelById = async (
   req: Request,
   res: Response,
@@ -123,11 +143,24 @@ export const getHotelById = async (
 ) => {
   try {
     const _id = req.params._id;
-    const hotel = await Hotel.findById(_id);
+    
+    // Fetch hotel with populated amenities, excluding embeddings for lightweight response
+    const hotel = await Hotel.findById(_id)
+      .populate('amenities', 'name') // Populate amenity names only
+      .select('-embedding') // Exclude embeddings field to reduce response size
+      .lean(); // Use lean() for better performance
+    
     if (!hotel) {
       throw new NotFoundError("Hotel not found");
     }
-    res.status(200).json(hotel);
+    
+    // Transform amenities from objects to string array for cleaner API response
+    const hotelWithAmenityNames = {
+      ...hotel,
+      amenities: hotel.amenities.map((amenity: any) => amenity.name) // Extract only the name strings
+    };
+    
+    res.status(200).json(hotelWithAmenityNames);
   } catch (error) {
     next(error);
   }

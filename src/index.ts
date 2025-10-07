@@ -11,6 +11,13 @@ import reviewRouter from "./api/review";
 import locationsRouter from "./api/location";
 import globalErrorHandlingMiddleware from "./api/middleware/global-error-handling-middleware";
 
+// Import models to ensure they are registered with Mongoose
+import "./infrastructure/entities/Hotel";
+import "./infrastructure/entities/Amenity";
+import "./infrastructure/entities/Booking";
+import "./infrastructure/entities/Review";
+import "./infrastructure/entities/Location";
+
 import { clerkMiddleware } from "@clerk/express";
 import bodyParser from "body-parser";
 import { handleWebhook } from "./application/payment";
