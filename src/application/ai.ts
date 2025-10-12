@@ -17,7 +17,7 @@ export const respondToAIQuery = async (
   try {
     const { query } = req.body;
 
-    console.log(query);
+    console.log("user query", query);
 
     const hotelsData = await Hotel.find();
 
@@ -44,7 +44,7 @@ export const respondToAIQuery = async (
       content: aiResponse,
     });
 
-    console.log(messages);
+    // console.log(messages);
 
     res.status(200).json({
       response: aiResponse,
