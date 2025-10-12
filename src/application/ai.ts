@@ -17,6 +17,8 @@ export const respondToAIQuery = async (
   try {
     const { query } = req.body;
 
+    console.log(query);
+
     const hotelsData = await Hotel.find();
 
     const response = await openai.responses.create({

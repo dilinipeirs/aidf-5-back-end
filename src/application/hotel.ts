@@ -51,8 +51,10 @@ export const getAllHotelsBySearchQuery = async (
     }
     const { query } = result.data;
 
+    // console.log(query);
+
     const queryEmbedding = await generateEmbedding(query);
-    console.log(queryEmbedding);
+    // console.log(queryEmbedding);
 
     const hotels = await Hotel.aggregate([
       {
@@ -77,6 +79,7 @@ export const getAllHotelsBySearchQuery = async (
           images: 1,
           rating: 1,
           reviews: 1,
+          amenities: 1,
           score: { $meta: "vectorSearchScore" }, // the similarity
         },
       },
